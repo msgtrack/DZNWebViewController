@@ -285,7 +285,7 @@ static char DZNWebViewControllerKVOContext = 0;
 
 - (NSArray *)applicationActivitiesForItem:(id)item
 {
-    NSMutableArray *activities = [NSMutableArray new];
+    NSMutableArray<UIActivity *> *activities = [NSMutableArray new];
     
     if ([item isKindOfClass:[UIImage class]]) {
         return activities;
@@ -306,7 +306,12 @@ static char DZNWebViewControllerKVOContext = 0;
     if ((_supportedWebActions & DZNWebActionOpenDolphin) > 0 || self.supportsAllActions) {
         [activities addObject:[DZNPolyActivity activityWithType:DZNPolyActivityTypeDolphin]];
     }
-    
+	
+	if( self.customActivities != 0 )
+	{
+		[activities addObjectsFromArray:self.customActivities];
+	}
+		
     return activities;
 }
 
@@ -606,7 +611,7 @@ static char DZNWebViewControllerKVOContext = 0;
         return;
     }
     
-    [self presentActivityControllerWithItem:self.webView.URL.absoluteString andTitle:self.webView.title sender:sender];
+    [self presentActivityControllerWithItem:self.webView.URL andTitle:self.webView.URL.absoluteString sender:sender];
 }
 
 - (void)presentActivityControllerWithItem:(id)item andTitle:(NSString *)title sender:(id)sender
@@ -615,7 +620,7 @@ static char DZNWebViewControllerKVOContext = 0;
         return;
     }
     
-    UIActivityViewController *controller = [[UIActivityViewController alloc] initWithActivityItems:@[title, item] applicationActivities:[self applicationActivitiesForItem:item]];
+    UIActivityViewController *controller = [[UIActivityViewController alloc] initWithActivityItems:@[item, title, self.webView] applicationActivities:[self applicationActivitiesForItem:item]];
     controller.excludedActivityTypes = [self excludedActivityTypesForItem:item];
     
     if (title) {
@@ -715,11 +720,27 @@ static char DZNWebViewControllerKVOContext = 0;
 
 - (DZNWebView *)webView:(DZNWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures
 {
-    if (!navigationAction.targetFrame.isMainFrame) {
+	NSLog(@"createWebViewWithConfiguration %@", [navigationAction description]);
+	
+	if (!navigationAction.targetFrame.isMainFrame) {
         [webView loadRequest:navigationAction.request];
     }
     
     return nil;
+}
+
+//- (nullable UIViewController *)webView:(WKWebView *)webView previewingViewControllerForElement:(WKPreviewElementInfo *)elementInfo defaultActions:(NSArray<id <WKPreviewActionItem>> *)previewActions
+//{
+//	NSLog(@"shouldPreviewElement %@", [elementInfo description]);
+//	
+//	return YES;
+//}
+
+- (BOOL)webView:(WKWebView *)webView shouldPreviewElement:(WKPreviewElementInfo *)elementInfo
+{
+	NSLog(@"shouldPreviewElement %@", [elementInfo description]);
+	
+	return YES;
 }
 
 
