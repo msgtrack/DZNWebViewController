@@ -22,6 +22,7 @@ typedef NS_OPTIONS(NSUInteger, DZNWebNavigationTools) {
     DZNWebNavigationToolBackward = (1 << 0),
     DZNWebNavigationToolForward = (1 << 1),
     DZNWebNavigationToolStopReload = (1 << 2),
+	DZNWebNavigationToolBookmarks = (1 << 3),
 };
 
 /**
@@ -46,6 +47,7 @@ typedef NS_OPTIONS(NSUInteger, DZNWebNavigationPrompt) {
     DZNWebNavigationPromptNone = 0,
     DZNWebNavigationPromptTitle = (1 << 0),
     DZNWebNavigationPromptURL = (1 << 1),
+	DZNWebNavigationEditableURL = (1 << 2),
     DZNWebNavigationPromptAll = DZNWebNavigationPromptTitle | DZNWebNavigationPromptURL,
 };
 

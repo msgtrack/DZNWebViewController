@@ -12,4 +12,6 @@
 "Forward" = "Forward";
 "History" = "History";
 "Stop" = "Stop";
-"Reload" = "Reload";
+"Reload" = "Reload"
+"Bookmarks" = "Bookmarks";
+"Switch Window" = "Switch Window";
