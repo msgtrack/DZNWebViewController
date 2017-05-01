@@ -54,7 +54,7 @@ typedef NS_OPTIONS(NSUInteger, DZNWebNavigationPrompt) {
 /**
  A very simple web browser with useful navigation and tooling features.
  */
-@interface DZNWebViewController : UIViewController <DZNNavigationDelegate, WKUIDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface DZNWebViewController : UIViewController <DZNNavigationDelegate, WKUIDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 
 /** The web view that the controller manages. */
 @property (nonatomic, strong) DZNWebView *webView;

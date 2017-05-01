@@ -12,6 +12,11 @@
 		13566D3EE0324E1BC41C95A4 /* DZNWebViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 6F34DEA9389058F3F93B9970 /* DZNWebViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2BD9BBCD0CDCD76A0C4FD13F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD0A5778901D1F5D38C931B2 /* Foundation.framework */; };
 		489DE318E0BE706769B0A255 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD0A5778901D1F5D38C931B2 /* Foundation.framework */; };
+		52F7A9A81EB45A1600182DFA /* DZNWebBookmarks.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F7A9A61EB45A0A00182DFA /* DZNWebBookmarks.m */; };
+		52F7A9AB1EB45C8D00182DFA /* DZNWebBookmark.h in Headers */ = {isa = PBXBuildFile; fileRef = 52F7A9A91EB45C8D00182DFA /* DZNWebBookmark.h */; };
+		52F7A9AC1EB45C8D00182DFA /* DZNWebBookmark.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F7A9AA1EB45C8D00182DFA /* DZNWebBookmark.m */; };
+		52F7A9AF1EB45DF000182DFA /* DZNWebBookmarksViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 52F7A9AD1EB45DF000182DFA /* DZNWebBookmarksViewController.h */; };
+		52F7A9B01EB45DF000182DFA /* DZNWebBookmarksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F7A9AE1EB45DF000182DFA /* DZNWebBookmarksViewController.m */; };
 		69214F9058C6702C2234F435 /* DZNPolyActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FF547B5D7CA7122FFC77C8F /* DZNPolyActivity.m */; };
 		77C0667D535E0909871E8EED /* DZNWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = EC56A55EDBDDF2467C190740 /* DZNWebView.h */; };
 		77C1293EC1045853E9890F1C /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC9CA13F29828E2A41EF7FF6 /* WebKit.framework */; };
@@ -49,6 +54,12 @@
 		4B0D8CA8F9BB1FF5F8FDFF0D /* DZNPolyActivity.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DZNPolyActivity.h; path = Source/Classes/DZNPolyActivity.h; sourceTree = "<group>"; };
 		4C5D16CBA8587A7E5FE7DC29 /* Pods-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-acknowledgements.markdown"; sourceTree = "<group>"; };
 		50F3AA83F6F772402F9EC76C /* Pods-DZNWebViewController.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DZNWebViewController.xcconfig"; sourceTree = "<group>"; };
+		52F7A9A51EB45A0A00182DFA /* DZNWebBookmarks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DZNWebBookmarks.h; path = Source/Classes/DZNWebBookmarks.h; sourceTree = "<group>"; };
+		52F7A9A61EB45A0A00182DFA /* DZNWebBookmarks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DZNWebBookmarks.m; path = Source/Classes/DZNWebBookmarks.m; sourceTree = "<group>"; };
+		52F7A9A91EB45C8D00182DFA /* DZNWebBookmark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DZNWebBookmark.h; path = Source/Classes/DZNWebBookmark.h; sourceTree = "<group>"; };
+		52F7A9AA1EB45C8D00182DFA /* DZNWebBookmark.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DZNWebBookmark.m; path = Source/Classes/DZNWebBookmark.m; sourceTree = "<group>"; };
+		52F7A9AD1EB45DF000182DFA /* DZNWebBookmarksViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DZNWebBookmarksViewController.h; path = Source/Classes/DZNWebBookmarksViewController.h; sourceTree = "<group>"; };
+		52F7A9AE1EB45DF000182DFA /* DZNWebBookmarksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DZNWebBookmarksViewController.m; path = Source/Classes/DZNWebBookmarksViewController.m; sourceTree = "<group>"; };
 		5D1330EC72F1909F6DDED80F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Pods.debug.xcconfig; sourceTree = "<group>"; };
 		623FA5E9F386B8C7DF5FCB8B /* dzn_icn_activity_safari@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "dzn_icn_activity_safari@2x.png"; path = "Source/Resources/dzn_icn_activity_safari@2x.png"; sourceTree = "<group>"; };
 		631330A98DE7D3AC6A0F1D78 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -205,8 +216,14 @@
 				C4649FE3F0F25087E0B9582D /* DZNWebView.m */,
 				6F34DEA9389058F3F93B9970 /* DZNWebViewController.h */,
 				11A49D7CD845C2046617D881 /* DZNWebViewController.m */,
+				52F7A9AD1EB45DF000182DFA /* DZNWebBookmarksViewController.h */,
+				52F7A9AE1EB45DF000182DFA /* DZNWebBookmarksViewController.m */,
 				35BC6AFB18B7B05B084F6BBA /* Resources */,
 				2F372510FAD32C2AF1851CCA /* Support Files */,
+				52F7A9A51EB45A0A00182DFA /* DZNWebBookmarks.h */,
+				52F7A9A61EB45A0A00182DFA /* DZNWebBookmarks.m */,
+				52F7A9A91EB45C8D00182DFA /* DZNWebBookmark.h */,
+				52F7A9AA1EB45C8D00182DFA /* DZNWebBookmark.m */,
 			);
 			name = DZNWebViewController;
 			path = ../../..;
@@ -247,7 +264,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				13566D3EE0324E1BC41C95A4 /* DZNWebViewController.h in Headers */,
+				52F7A9AF1EB45DF000182DFA /* DZNWebBookmarksViewController.h in Headers */,
 				E8076C68AC3506FE1F55385F /* DZNPolyActivity.h in Headers */,
+				52F7A9AB1EB45C8D00182DFA /* DZNWebBookmark.h in Headers */,
 				77C0667D535E0909871E8EED /* DZNWebView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -320,8 +339,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52F7A9A81EB45A1600182DFA /* DZNWebBookmarks.m in Sources */,
 				69214F9058C6702C2234F435 /* DZNPolyActivity.m in Sources */,
 				7C9D3F5A208ABC8B0F0675D4 /* DZNWebView.m in Sources */,
+				52F7A9AC1EB45C8D00182DFA /* DZNWebBookmark.m in Sources */,
+				52F7A9B01EB45DF000182DFA /* DZNWebBookmarksViewController.m in Sources */,
 				12F7014E1AC3F7AC0A0F696C /* DZNWebViewController.m in Sources */,
 				EC4475FC84960C3E274CBC92 /* Pods-DZNWebViewController-dummy.m in Sources */,
 			);

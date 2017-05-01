@@ -90,6 +90,7 @@ static char DZNWebViewControllerKVOContext = 0;
     
     [self.webView addObserver:self forKeyPath:@"loading" options:NSKeyValueObservingOptionNew context:&DZNWebViewControllerKVOContext];
     self.completedInitialLoad = NO;
+	// TODO: detect taps in toolbar or nav bar areas if hidden and show the bars
 }
 
 
@@ -123,8 +124,18 @@ static char DZNWebViewControllerKVOContext = 0;
 	//self.navigationController.navigationItem.hidesBackButton = YES;
 	
     if (!self.webView.URL) {
+		[self setTitle:self.URL.absoluteString];
         [self loadURL:self.URL];
     }
+	else
+	{
+		[self setTitle:self.URL.absoluteString];
+	}
+	
+	self.navigationController.toolbarHidden = NO;
+	self.navigationController.navigationBarHidden = NO;
+	self.navigationController.hidesBarsOnTap = NO;
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -387,7 +398,12 @@ static char DZNWebViewControllerKVOContext = 0;
 
 - (void)setURL:(NSURL *)URL
 {
-    if ([self.URL isEqual:URL]) {
+	if( URL == 0 )
+	{
+		return;
+	}
+	
+	if ([self.URL isEqual:URL]) {
         return;
     }
     
@@ -406,7 +422,11 @@ static char DZNWebViewControllerKVOContext = 0;
     }
     
     NSString *url = self.webView.URL.absoluteString;
-    
+	if( url == 0 )
+	{
+		url = self.URL.absoluteString;
+	}
+    //TODO: .hasOnlySecureContent
 	
     UIFont *titleFont = self.navigationBar.titleTextAttributes[NSFontAttributeName] ? : [UIFont boldSystemFontOfSize:14.0];
     UIFont *urlFont = [UIFont fontWithName:titleFont.fontName size:titleFont.pointSize-2.0];
@@ -445,6 +465,11 @@ static char DZNWebViewControllerKVOContext = 0;
 			textField.textAlignment = NSTextAlignmentCenter;
 			textField.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
 			textField.userInteractionEnabled = YES;
+			textField.delegate = self;
+			textField.placeholder = @"URL";
+			textField.spellCheckingType = UITextSpellCheckingTypeNo;
+			textField.keyboardType = UIKeyboardTypeURL;
+			textField.autocorrectionType = UITextAutocorrectionTypeNo;
 			theTitleView = textField;
 			self.navigationItem.titleView = textField;
 		}
@@ -624,7 +649,7 @@ static char DZNWebViewControllerKVOContext = 0;
     self.navigationBarSuperView = self.navigationBar.superview;
     
     self.navigationController.hidesBarsOnSwipe = self.hideBarsWithGestures;
-    self.navigationController.hidesBarsWhenKeyboardAppears = self.hideBarsWithGestures;
+    //self.navigationController.hidesBarsWhenKeyboardAppears = self.hideBarsWithGestures;
     self.navigationController.hidesBarsWhenVerticallyCompact = self.hideBarsWithGestures;
 	self.navigationController.navigationItem.hidesBackButton = YES;
 
@@ -732,6 +757,48 @@ static char DZNWebViewControllerKVOContext = 0;
     }
 }
 
+-(NSString*)repairURL:(NSString*)url
+{
+	int atemp = 0;
+	for( int i = 0; i < [url length]; i++)
+	{
+		if( [url characterAtIndex:i] == '.')
+		{
+			atemp++;
+		}
+	}
+	if((atemp == 0)||([url characterAtIndex:[url length]-1]=='.')){
+		return url;
+	}
+	NSString *temp = @"";
+	if([url length] >=11)
+	{
+		temp  = [NSString stringWithFormat:@"%@",[url substringToIndex:11]];
+	}
+	NSString *temp2 = @"";
+	if(![temp isEqualToString:@"http://www."])
+	{
+		for(int i = 0;i<[url length];i++){
+			if([url characterAtIndex:i] == '.'){
+				if(([url characterAtIndex:i-1] == 'w')||([url characterAtIndex:i-1] == 'W')){
+					temp2 = [url substringFromIndex:i+1];
+				}else{
+					temp2 = url;
+				}
+				break;
+			}
+		}
+		temp = [NSString stringWithFormat:@"%@%@",@"http://www.",temp2];
+		if ([[temp substringToIndex:18] isEqualToString:@"http://www.http://"]) {
+			temp = [temp substringFromIndex:11];
+		}
+		return temp;
+	}
+	else
+	{
+		return url;
+	}
+}
 
 #pragma mark - DZNNavigationDelegate methods
 
@@ -747,7 +814,13 @@ static char DZNWebViewControllerKVOContext = 0;
 
 - (void)webView:(DZNWebView *)webView didUpdateProgress:(CGFloat)progress
 {
-    if (!self.showLoadingProgress) {
+//	if( self.view.isFocused)
+	if( !(self.isViewLoaded && self.view.window && (self.navigationController.topViewController == self)) )
+	{
+		return;
+	}
+	
+	if (!self.showLoadingProgress) {
         [self destroyProgressViewIfNeeded];
         return;
     }
@@ -885,6 +958,40 @@ static char DZNWebViewControllerKVOContext = 0;
     
     [self dismissHistoryController];
 }
+
+#pragma mark - UITextFieldDelegate Methods
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+	[textField resignFirstResponder];
+	NSURL *url = [[NSURL alloc] initWithString:textField.text];
+	
+	[self setURL:url];
+	return true;
+}
+
+//- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+//{
+//	self.navigationController.hidesBarsOnSwipe = NO;
+//	self.navigationController.hidesBarsWhenKeyboardAppears = NO;
+//	self.navigationController.hidesBarsWhenVerticallyCompact = NO;
+//	
+//	return YES;
+//}
+//
+//- (void)textFieldDidBeginEditing:(UITextField *)textField
+//{
+//	self.navigationController.hidesBarsOnSwipe = NO;
+//	self.navigationController.hidesBarsWhenKeyboardAppears = NO;
+//	self.navigationController.hidesBarsWhenVerticallyCompact = NO;
+//}
+//
+//-(void)textFieldDidEndEditing:(UITextField*)textField
+//{
+//	self.navigationController.hidesBarsOnSwipe = self.hideBarsWithGestures;
+//	//self.navigationController.hidesBarsWhenKeyboardAppears = self.hideBarsWithGestures;
+//	self.navigationController.hidesBarsWhenVerticallyCompact = self.hideBarsWithGestures;
+//}
 
 
 #pragma mark - Key Value Observer
