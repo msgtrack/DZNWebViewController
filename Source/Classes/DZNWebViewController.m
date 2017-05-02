@@ -20,7 +20,6 @@ static char DZNWebViewControllerKVOContext = 0;
 
 @property (nonatomic, strong) UIBarButtonItem *backwardBarItem;
 @property (nonatomic, strong) UIBarButtonItem *forwardBarItem;
-@property (nonatomic, strong) UIBarButtonItem *bookmarkBarItem;
 @property (nonatomic, strong) UIBarButtonItem *stateBarItem;
 @property (nonatomic, strong) UIBarButtonItem *actionBarItem;
 @property (nonatomic, strong) UIBarButtonItem *switchWindowBarItem;
@@ -207,17 +206,6 @@ static char DZNWebViewControllerKVOContext = 0;
     return _forwardBarItem;
 }
 
-- (UIBarButtonItem *)bookmarkBarItem
-{
-	if (!_bookmarkBarItem)
-	{
-		_bookmarkBarItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(showBookmarks:)];
-		_bookmarkBarItem.accessibilityLabel = NSLocalizedStringFromTable(@"Bookmarks", @"DZNWebViewController", @"Accessibility label button title");
-		_bookmarkBarItem.enabled = YES;
-	}
-	return _bookmarkBarItem;
-}
-
 - (UIBarButtonItem *)switchWindowBarItem
 {
 	if (!_switchWindowBarItem)
@@ -266,9 +254,14 @@ static char DZNWebViewControllerKVOContext = 0;
         [items addObject:self.forwardBarItem];
     }
 	
-	if ((self.supportedWebNavigationTools & DZNWebNavigationToolBookmarks) > 0 || self.supportsAllNavigationTools) {
-		if (!DZN_IS_IPAD) [items addObject:flexibleSpace];
-		[items addObject:self.bookmarkBarItem];
+	for( NSObject<DZNToolbarItem> *customItem in self.customToolbarItems )
+	{
+		UIBarButtonItem *item = [customItem toolbarItemForWebController:self];
+		if( item != 0 )
+		{
+			if (!DZN_IS_IPAD) [items addObject:flexibleSpace];
+			[items addObject:item];
+		}
 	}
 
     if (self.supportedWebActions > 0) {
@@ -547,14 +540,16 @@ static char DZNWebViewControllerKVOContext = 0;
 
 - (void)goBackward:(id)sender
 {
-    if ([self.webView canGoBack]) {
+    if ([self.webView canGoBack])
+	{
         [self.webView goBack];
     }
 }
 
 - (void)goForward:(id)sender
 {
-    if ([self.webView canGoForward]) {
+    if ([self.webView canGoForward])
+	{
         [self.webView goForward];
     }
 }
@@ -564,12 +559,7 @@ static char DZNWebViewControllerKVOContext = 0;
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
--(void)showBookmarks:(id)sender
-{
-	// TODO: implement bookmarks
-}
-
-- (void)dismissHistoryController
+- (void)dismissPresentedController:(id)sender
 {
     if (self.presentedViewController) {
         [self.presentedViewController dismissViewControllerAnimated:YES completion:^{
@@ -605,17 +595,24 @@ static char DZNWebViewControllerKVOContext = 0;
     controller.tableView.delegate = self;
     controller.tableView.dataSource = self;
     controller.tableView.tag = tool;
-    controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissHistoryController)];
+	controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissPresentedController:)];
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     UIView *bar = DZN_IS_IPAD ? self.navigationBar : self.toolbar;
-    
-    if (DZN_IS_IPAD) {
+	
+	if( navigationController.popoverPresentationController != 0 )
+	{
+		NSLog( @"Has popover controller");
+	}
+	
+    if (DZN_IS_IPAD)
+	{
         UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:navigationController];
         [popover presentPopoverFromRect:view.frame inView:bar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
-    else {
-        [self presentViewController:navigationController animated:YES completion:NULL];
+    else
+	{
+        [self presentViewController:navigationController animated:YES completion:nil];
     }
 }
 
@@ -956,7 +953,7 @@ static char DZNWebViewControllerKVOContext = 0;
     
     [self.webView goToBackForwardListItem:item];
     
-    [self dismissHistoryController];
+	[self dismissPresentedController:self];
 }
 
 #pragma mark - UITextFieldDelegate Methods

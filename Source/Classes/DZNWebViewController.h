@@ -51,6 +51,18 @@ typedef NS_OPTIONS(NSUInteger, DZNWebNavigationPrompt) {
     DZNWebNavigationPromptAll = DZNWebNavigationPromptTitle | DZNWebNavigationPromptURL,
 };
 
+@class DZNWebViewController;
+
+@protocol DZNToolbarItem <NSObject>
+
+@required
+
+//-(UIViewController*)createForWebController:(DZNWebViewController*) from:(UIBarButtonItem*)item;
+-(UIBarButtonItem*)toolbarItemForWebController:(DZNWebViewController*)webConroller;
+
+@end
+
+
 /**
  A very simple web browser with useful navigation and tooling features.
  */
@@ -72,6 +84,8 @@ typedef NS_OPTIONS(NSUInteger, DZNWebNavigationPrompt) {
 @property (nonatomic) BOOL allowHistory;
 /** YES if both, the navigation and tool bars should hide when panning vertically. Default is YES. */
 @property (nonatomic) BOOL hideBarsWithGestures;
+/** Custom Toolbar items */
+@property (nonatomic, readwrite) NSArray<NSObject<DZNToolbarItem>*> *customToolbarItems;
 /** Custom activities */
 @property (nonatomic) NSArray<UIActivity*> *customActivities;
 /** [Deprecated] YES if should set the title automatically based on the page title and URL. Default is YES. */
@@ -151,4 +165,9 @@ typedef NS_OPTIONS(NSUInteger, DZNWebNavigationPrompt) {
 // UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath NS_REQUIRES_SUPER;
 
+// Dismiss action
+- (void)dismissPresentedController:(id)sender;
+
 @end
+
+
