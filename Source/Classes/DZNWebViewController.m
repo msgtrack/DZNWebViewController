@@ -75,6 +75,9 @@ static char DZNWebViewControllerKVOContext = 0;
 {
     self.supportedWebNavigationTools = DZNWebNavigationToolAll;
     self.supportedWebActions = DZNWebActionAll;
+	//DZNWebActionOpenChrome = (1 << 4),
+	//DZNWebActionOpenOperaMini = (1 << 5),
+	//DZNWebActionOpenDolphin
     self.webNavigationPrompt = DZNWebNavigationPromptAll;
     self.showLoadingProgress = YES;
     self.hideBarsWithGestures = YES;
@@ -228,6 +231,16 @@ static char DZNWebViewControllerKVOContext = 0;
     return _stateBarItem;
 }
 
+//- (UIButton *)stateButton
+//{
+//	if( !_stateButton )
+//	{
+//		_stateButton = [[UIButton alloc] initWithFrame:<#(CGRect)#>];
+//		_stateButton.
+//	}
+//	return _stateButton;
+//}
+
 - (UIBarButtonItem *)actionBarItem
 {
     if (!_actionBarItem)
@@ -334,7 +347,7 @@ static char DZNWebViewControllerKVOContext = 0;
     if ((_supportedWebActions & DZNWebActionOpenSafari) > 0 || self.supportsAllActions) {
         [activities addObject:[DZNPolyActivity activityWithType:DZNPolyActivityTypeSafari]];
     }
-    if ((_supportedWebActions & DZNWebActionOpenChrome) > 0 || self.supportsAllActions) {
+    /*if ((_supportedWebActions & DZNWebActionOpenChrome) > 0 || self.supportsAllActions) {
         [activities addObject:[DZNPolyActivity activityWithType:DZNPolyActivityTypeChrome]];
     }
     if ((_supportedWebActions & DZNWebActionOpenOperaMini) > 0 || self.supportsAllActions) {
@@ -342,7 +355,7 @@ static char DZNWebViewControllerKVOContext = 0;
     }
     if ((_supportedWebActions & DZNWebActionOpenDolphin) > 0 || self.supportsAllActions) {
         [activities addObject:[DZNPolyActivity activityWithType:DZNPolyActivityTypeDolphin]];
-    }
+    }*/
 	
 	if( self.customActivities != 0 )
 	{
@@ -463,6 +476,11 @@ static char DZNWebViewControllerKVOContext = 0;
 			textField.spellCheckingType = UITextSpellCheckingTypeNo;
 			textField.keyboardType = UIKeyboardTypeURL;
 			textField.autocorrectionType = UITextAutocorrectionTypeNo;
+			textField.returnKeyType = UIReturnKeyGo;
+			textField.enablesReturnKeyAutomatically = YES;
+			textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+			//textField.rightView = self.stateBarItem;
+			textField.rightViewMode = UITextFieldViewModeUnlessEditing;
 			theTitleView = textField;
 			self.navigationItem.titleView = textField;
 		}
@@ -623,7 +641,8 @@ static char DZNWebViewControllerKVOContext = 0;
 		NSMutableArray *items = [self navigationToolItems];
 		UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
 		
-		if ((self.supportedWebNavigationTools & DZNWebNavigationToolStopReload) > 0 || self.supportsAllNavigationTools) {
+		if ((self.supportedWebNavigationTools & DZNWebNavigationToolStopReload) > 0 || self.supportsAllNavigationTools)
+		{
 			if (!DZN_IS_IPAD) [items addObject:flexibleSpace];
 			[items addObject:self.stateBarItem];
 		}
@@ -634,7 +653,7 @@ static char DZNWebViewControllerKVOContext = 0;
 	{
         [self setToolbarItems:[self navigationToolItems]];
 		
-		if ((self.supportedWebNavigationTools & DZNWebNavigationToolStopReload) > 0 || self.supportsAllNavigationTools)
+		if (/*((self.webNavigationPrompt & DZNWebNavigationEditableURL) == 0) &&*/ ((self.supportedWebNavigationTools & DZNWebNavigationToolStopReload) > 0 || self.supportsAllNavigationTools))
 		{
 			self.navigationItem.rightBarButtonItem = self.stateBarItem;
 		}
@@ -754,6 +773,45 @@ static char DZNWebViewControllerKVOContext = 0;
     }
 }
 
+-(NSURL*)repairURL2:(NSString*)urlString
+{
+	NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+	
+	if (!urlString || urlString.length == 0)
+	{
+#if DEBUG
+		NSLog(@"No url, load duckduckgo.com");
+#endif
+		return [NSURL URLWithString:@"http://duckduckgo.com/"];
+	}
+	else if ([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"])
+	{
+#if DEBUG
+		NSLog(@"Got regular URL, load it");
+#endif
+		return url;
+	}
+	else
+	{
+		NSError *error = [[NSError alloc] init];
+		NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^((\\S{1,61})\\.)+([a-z0-9-]{2,30})[\\?\\/]?\\S*$" options:NSRegularExpressionCaseInsensitive error:&error];
+		if ([[regex matchesInString:urlString options:0 range:NSMakeRange(0, urlString.length)] count] > 0)
+		{
+#if DEBUG
+			NSLog(@"Regex match for %@", urlString);
+#endif
+			return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", urlString]];
+		}
+		else
+		{
+#if DEBUG
+			NSLog(@"No regex match for %@", urlString);
+#endif
+			return [self ddgURLForString:urlString];
+		}
+	}
+}
+
 -(NSString*)repairURL:(NSString*)url
 {
 	int atemp = 0;
@@ -764,7 +822,8 @@ static char DZNWebViewControllerKVOContext = 0;
 			atemp++;
 		}
 	}
-	if((atemp == 0)||([url characterAtIndex:[url length]-1]=='.')){
+	if((atemp == 0)||([url characterAtIndex:[url length]-1]=='.'))
+	{
 		return url;
 	}
 	NSString *temp = @"";
@@ -796,6 +855,18 @@ static char DZNWebViewControllerKVOContext = 0;
 		return url;
 	}
 }
+
+#pragma mark - helpers
+- (NSURL *)googleURLForString:(NSString *)string
+{
+	return [NSURL URLWithString:[NSString stringWithFormat:@"https://www.google.com/search?q=%@", [string stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+}
+
+- (NSURL *)ddgURLForString:(NSString *)string
+{
+	return [NSURL URLWithString:[NSString stringWithFormat:@"https://www.duckduckgo.com/%@", [string stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+}
+
 
 #pragma mark - DZNNavigationDelegate methods
 
@@ -961,7 +1032,10 @@ static char DZNWebViewControllerKVOContext = 0;
 -(BOOL)textFieldShouldReturn:(UITextField *)textField
 {
 	[textField resignFirstResponder];
-	NSURL *url = [[NSURL alloc] initWithString:textField.text];
+//	self.navigationItem.rightBarButtonItems addObj = self.stateBarItem;
+//	NSURL *url = [[NSURL alloc] initWithString:textField.text];
+	
+	NSURL *url = [self repairURL2:textField.text];
 	
 	[self setURL:url];
 	return true;
@@ -976,12 +1050,13 @@ static char DZNWebViewControllerKVOContext = 0;
 //	return YES;
 //}
 //
-//- (void)textFieldDidBeginEditing:(UITextField *)textField
-//{
-//	self.navigationController.hidesBarsOnSwipe = NO;
-//	self.navigationController.hidesBarsWhenKeyboardAppears = NO;
-//	self.navigationController.hidesBarsWhenVerticallyCompact = NO;
-//}
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+	//self.navigationItem.rightBarButtonItems = self.navigationItem.rightBarButtonItems arrayBy;
+	//self.navigationController.hidesBarsOnSwipe = NO;
+	//self.navigationController.hidesBarsWhenKeyboardAppears = NO;
+	//self.navigationController.hidesBarsWhenVerticallyCompact = NO;
+}
 //
 //-(void)textFieldDidEndEditing:(UITextField*)textField
 //{
