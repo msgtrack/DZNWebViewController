@@ -213,7 +213,8 @@ static char DZNWebViewControllerKVOContext = 0;
 {
 	if (!_switchWindowBarItem)
 	{
-		_switchWindowBarItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(switchWindow:)];
+		_switchWindowBarItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"switch_tasks_icon"] style:UIBarButtonItemStylePlain target:self action:@selector(switchWindow:)];
+		//_switchWindowBarItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(switchWindow:)];
 		_switchWindowBarItem.landscapeImagePhone = nil;
 		_switchWindowBarItem.accessibilityLabel = NSLocalizedStringFromTable(@"Switch Window", @"DZNWebViewController", @"Accessibility label button title");
 		_switchWindowBarItem.enabled = YES;
@@ -245,7 +246,8 @@ static char DZNWebViewControllerKVOContext = 0;
 {
     if (!_actionBarItem)
     {
-        _actionBarItem = [[UIBarButtonItem alloc] initWithImage:[self actionButtonImage] landscapeImagePhone:nil style:0 target:self action:@selector(presentActivityController:)];
+		_actionBarItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(presentActivityController:)];
+        //_actionBarItem = [[UIBarButtonItem alloc] initWithImage:[self actionButtonImage] landscapeImagePhone:nil style:0 target:self action:@selector(presentActivityController:)];
         _actionBarItem.accessibilityLabel = NSLocalizedStringFromTable(@"Share", @"DZNWebViewController", @"Accessibility label button title");
         _actionBarItem.enabled = NO;
     }
