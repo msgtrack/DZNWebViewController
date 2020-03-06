@@ -82,6 +82,7 @@ static char DZNWebViewControllerKVOContext = 0;
     self.showLoadingProgress = YES;
     self.hideBarsWithGestures = YES;
     self.allowHistory = YES;
+	self.showCustomActionsBeforeActivity = NO;
     
     self.webView = [[DZNWebView alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
     self.webView.backgroundColor = [UIColor whiteColor];
@@ -335,7 +336,7 @@ static char DZNWebViewControllerKVOContext = 0;
     return _actionButtonImage;
 }
 
-- (NSArray *)applicationActivitiesForItem:(id)item
+- (NSArray<UIActivity *> *)applicationActivitiesForItem:(id)item
 {
     NSMutableArray<UIActivity *> *activities = [NSMutableArray new];
     
@@ -740,7 +741,43 @@ static char DZNWebViewControllerKVOContext = 0;
         return;
     }
     
-    [self presentActivityControllerWithItem:self.webView.URL andTitle:self.webView.URL.absoluteString sender:sender];
+	if( self.showCustomActionsBeforeActivity )
+	{
+		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+		
+		NSArray<UIActivity *> *activities = [self applicationActivitiesForItem:self.webView.URL];
+		
+		for (UIActivity *customActivity in activities) {
+			UIAlertAction *caction = [UIAlertAction actionWithTitle:customActivity.activityTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+				
+				// Perform UI Activity
+				[customActivity prepareWithActivityItems:@[self.webView.URL, self.webView.URL.absoluteString, self.webView]];
+				[customActivity performActivity];
+			}];
+			[alertController addAction:caction];
+		}
+		
+		UIAlertAction *shareAction = [UIAlertAction actionWithTitle:@"Share..." style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+			[self presentActivityControllerWithItem:self.webView.URL andTitle:self.webView.URL.absoluteString sender:sender];
+		}];
+		
+		UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+		
+		[alertController addAction:cancelAction];
+		[alertController addAction:shareAction];
+		
+		// Configure the alert controller's popover presentation controller if it has one.
+		if( alertController.popoverPresentationController != nil )
+		{
+			alertController.popoverPresentationController.barButtonItem = sender;
+		}
+		
+		[self presentViewController:alertController animated:YES completion:nil];
+	}
+	else
+	{
+		[self presentActivityControllerWithItem:self.webView.URL andTitle:self.webView.URL.absoluteString sender:sender];
+	}
 }
 
 - (void)presentActivityControllerWithItem:(id)item andTitle:(NSString *)title sender:(id)sender

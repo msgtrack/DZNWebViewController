@@ -86,6 +86,8 @@ typedef NS_OPTIONS(NSUInteger, DZNWebNavigationPrompt) {
 @property (nonatomic) BOOL hideBarsWithGestures;
 /** Custom Toolbar items */
 @property (nonatomic, readwrite) NSArray<NSObject<DZNToolbarItem>*> *customToolbarItems;
+/** Yes if show an action sheet with the custom activities and item to go to activity sheet instead of showing activity sheet first. Default is NO. */
+@property (nonatomic) BOOL showCustomActionsBeforeActivity;
 /** Custom activities */
 @property (nonatomic) NSArray<UIActivity*> *customActivities;
 /** [Deprecated] YES if should set the title automatically based on the page title and URL. Default is YES. */
