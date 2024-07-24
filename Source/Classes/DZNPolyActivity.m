@@ -167,20 +167,21 @@
             completed = YES;
             break;
         case DZNPolyActivityTypeSafari:
-            completed = [[UIApplication sharedApplication] openURL:self.URL];
+//			- (void)openURL:(NSURL*)url options:(NSDictionary<UIApplicationOpenExternalURLOptionsKey, id> *)options completionHandler:(void (^ __nullable)(BOOL success))completion API_AVAILABLE(ios(10.0));
+			[[UIApplication sharedApplication] openURL:self.URL options:@{} completionHandler:nil];
             break;
-        case DZNPolyActivityTypeChrome:
-            completed = [[UIApplication sharedApplication] openURL:[self chromeURLWithURL:self.URL]];
-            break;
-        case DZNPolyActivityTypeOpera:
-            completed = [[UIApplication sharedApplication] openURL:[self operaURLWithURL:self.URL]];
-            break;
-        case DZNPolyActivityTypeDolphin:
-            completed = [[UIApplication sharedApplication] openURL:[self dolphinURLWithURL:self.URL]];
-            break;
+//        case DZNPolyActivityTypeChrome:
+//			[[UIApplication sharedApplication] openURL:[self chromeURLWithURL:self.URL] options:@{} completionHandler:^(BOOL success){[self activityDidFinish:success];}];
+//            break;
+//        case DZNPolyActivityTypeOpera:
+//			[[UIApplication sharedApplication] openURL:[self operaURLWithURL:self.URL] options:@{} completionHandler:^(BOOL success){[self activityDidFinish:success];}];
+//            break;
+//        case DZNPolyActivityTypeDolphin:
+//			[[UIApplication sharedApplication] openURL:[self dolphinURLWithURL:self.URL] options:@{} completionHandler:^(BOOL success){[self activityDidFinish:success];}];
+//            break;
     }
     
-	[self activityDidFinish:completed];
+	[self activityDidFinish:YES];
 }
 
 @end

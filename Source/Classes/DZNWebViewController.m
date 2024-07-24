@@ -104,7 +104,8 @@ static char DZNWebViewControllerKVOContext = 0;
     [super loadView];
     
     self.view = self.webView;
-    self.automaticallyAdjustsScrollViewInsets = YES;
+    //self.automaticallyAdjustsScrollViewInsets = YES;
+	//Use UIScrollView's contentInsetAdjustmentBehavior instead
 }
 
 - (void)viewDidLoad
@@ -138,6 +139,10 @@ static char DZNWebViewControllerKVOContext = 0;
 	self.navigationController.toolbarHidden = NO;
 	self.navigationController.navigationBarHidden = NO;
 	self.navigationController.hidesBarsOnTap = NO;
+
+
+	//NSLog(@"nav controller hides bars on swipe: %d",  self.navigationController.hidesBarsOnSwipe);
+	self.navigationController.hidesBarsOnSwipe = self.hideBarsWithGestures;
 
 }
 
@@ -1124,44 +1129,44 @@ static char DZNWebViewControllerKVOContext = 0;
         return;
     }
     
-    if ([object isEqual:self.navigationBar]) {
-        
-        // Skips for landscape orientation, since there is no status bar visible on iPhone landscape
-        if (DZN_IS_LANDSCAPE) {
-            return;
-        }
-        
-        id new = change[NSKeyValueChangeNewKey];
-        
-        if ([keyPath isEqualToString:@"hidden"] && [new boolValue] && self.navigationBar.center.y >= -2.0) {
-            
-            self.navigationBar.hidden = NO;
-            
-            if (!self.navigationBar.superview) {
-                [self.navigationBarSuperView addSubview:self.navigationBar];
-            }
-        }
-        
-        if ([keyPath isEqualToString:@"center"]) {
-            
-            CGPoint center = [new CGPointValue];
-            
-            if (center.y < -2.0) {
-                center.y = -2.0;
-                self.navigationBar.center = center;
-                
-                [UIView beginAnimations:@"DZNNavigationBarAnimation" context:nil];
-                
-                for (UIView *subview in self.navigationBar.subviews) {
-                    if (subview != self.navigationBar.subviews[0]) {
-                        subview.alpha = 0.0;
-                    }
-                }
-                
-                [UIView commitAnimations];
-            }
-        }
-    }
+//    if ([object isEqual:self.navigationBar]) {
+//        
+//        // Skips for landscape orientation, since there is no status bar visible on iPhone landscape
+//        if (DZN_IS_LANDSCAPE) {
+//            return;
+//        }
+//        
+//        id new = change[NSKeyValueChangeNewKey];
+//        
+//        if ([keyPath isEqualToString:@"hidden"] && [new boolValue] && self.navigationBar.center.y >= -2.0) {
+//            
+//            self.navigationBar.hidden = NO;
+//            
+//            if (!self.navigationBar.superview) {
+//                [self.navigationBarSuperView addSubview:self.navigationBar];
+//            }
+//        }
+//        
+//        if ([keyPath isEqualToString:@"center"]) {
+//            
+//            CGPoint center = [new CGPointValue];
+//            
+//            if (center.y < -2.0) {
+//                center.y = -2.0;
+//                self.navigationBar.center = center;
+//                
+//                [UIView beginAnimations:@"DZNNavigationBarAnimation" context:nil];
+//                
+//                for (UIView *subview in self.navigationBar.subviews) {
+//                    if (subview != self.navigationBar.subviews[0]) {
+//                        subview.alpha = 0.0;
+//                    }
+//                }
+//                
+//                [UIView commitAnimations];
+//            }
+//        }
+//    }
     
     if ([object isEqual:self.webView] && [keyPath isEqualToString:@"loading"]) {
         [self updateToolbarItems];
@@ -1191,11 +1196,6 @@ static char DZNWebViewControllerKVOContext = 0;
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
 }
 
 - (void)dealloc
